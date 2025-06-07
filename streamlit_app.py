@@ -2,7 +2,7 @@
 import streamlit as st
 import requests
 #from snowflake.snowpark.context import get_active_session
-from snowflake.snowpark.functions import col, filter
+from snowflake.snowpark.functions import col
 
 # Write directly to the app
 st.title(f":cup_with_straw: Customize your Smoothie! :cup_with_straw:")
@@ -15,7 +15,7 @@ customer_name = st.text_input("Name for your order")
 
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'),col('SEARCH_ON'))
 
 #st.dataframe(data=my_dataframe, use_container_width=True)
 
@@ -27,7 +27,6 @@ if ingredient_list:
 
     for fruit_choosen in ingredient_list:
         ingredient_string += fruit_choosen + ' '
-        #col_search_on = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
         st.subheader(fruit_choosen + 'Nutrition Information' )
         smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_choosen)
         st_dataframe = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
